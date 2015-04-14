@@ -1,41 +1,8 @@
 
 #include "OSGCommon.h"
+#include "BillboardFactory.h"
 using namespace osg;
-
-osg::ref_ptr<osg::Geometry> createQuad()
-{
-	// create quad
-	osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
-
-	// setup vertexes
-	osg::ref_ptr<osg::Vec3Array> v = new osg::Vec3Array;
-	geom->setVertexArray(v.get());
-	v->push_back(osg::Vec3(-1.f, 0.f, -1.f));
-	v->push_back(osg::Vec3(1.f, 0.f, -1.f));
-	v->push_back(osg::Vec3(1.f, 0.f, 1.f));
-	v->push_back(osg::Vec3(-1.f, 0.f, 1.f));
-
-	// setup normals
-	ref_ptr<Vec3Array> normal = new Vec3Array();
-	normal->push_back(Vec3(1.0f, 0.0f, 0.0f) ^ Vec3(0.0f, 0.0f, 1.0f));
-
-	geom->setNormalArray(normal.get());
-	geom->setNormalBinding(Geometry::BIND_OVERALL);
-
-	// setup texture coordinates.
-	ref_ptr<Vec2Array> vt = new Vec2Array();
-	vt->push_back(Vec2(0.0f, 0.0f));
-	vt->push_back(Vec2(1.0f, 0.0f));
-	vt->push_back(Vec2(1.0f, 1.0f));
-	vt->push_back(Vec2(0.0f, 1.0f));
-
-	geom->setTexCoordArray(0, vt.get());
-
-	// draw quad
-	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4));
-
-	return geom;
-}
+using namespace BillboardExtension;
 
 ref_ptr<Node> creatBillboardTree(ref_ptr<Image> image)
 {
@@ -95,12 +62,20 @@ int main()
 	ref_ptr<osg::Group> root = new osg::Group();
 
 	// read image.
-	ref_ptr<Image> image = osgDB::readImageFile("Bitmap.bmp");//Images/tree0.rgba
+	ref_ptr<Image> image = osgDB::readImageFile("Bitmap.bmp");// icon.png//Images/tree0.rgba 
 
 	// scale to fit size.
 	ref_ptr<PositionAttitudeTransform> pat = new PositionAttitudeTransform();
 	pat->setScale(Vec3(5.0f, 5.0f, 5.0f));
-	pat->addChild(creatBillboardTree(image.get()));
+	auto b1 = BillboardFactory::getInstance()->createBillboard(image, Vec3(5.0f, 0.0f, 0.0f));
+	auto b2= BillboardFactory::getInstance()->createBillboard(NULL, Vec3(10.0f, 0.0f, 0.0f), Billboard::AXIAL_ROT);
+
+	ref_ptr<Group> billboard = new Group();
+	billboard->addChild(b1);
+	billboard->addChild(b2);
+	billboard->addChild(BillboardFactory::getInstance()->createBillboard());
+	
+	pat->addChild(billboard.get());
 
 	root->addChild(pat.get());
 
