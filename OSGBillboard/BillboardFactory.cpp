@@ -48,9 +48,14 @@ osg::ref_ptr<osg::Geometry> BillboardExtension::createQuad()
 
 osg::ref_ptr<osg::Billboard> BillboardFactory::createBillboard(osg::Image* image, osg::Vec3 position, osg::Billboard::Mode mode, osg::Vec3 axis, osg::Geometry* geometry)
 {
+
 	auto geom = geometry;
 	if (!geom)
+	{
+		if (!m_geometry)
+			return NULL;
 		geom = m_geometry.get();
+	}
 
 	if (image)
 	{
@@ -68,11 +73,18 @@ osg::ref_ptr<osg::Billboard> BillboardFactory::createBillboard(osg::Image* image
 		// enable blending
 		stateset->setMode(GL_BLEND, StateAttribute::ON);
 
+		// set render hint, prepare to transparent.
+		stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+
+		// enable depth test
+		stateset->setMode(GL_DEPTH_TEST, StateAttribute::ON);
+
 		// close lighting
 		stateset->setMode(GL_LIGHTING, StateAttribute::OFF);
 
 		geom->setStateSet(stateset.get());
 	}
+
 	osg::ref_ptr<osg::Billboard> billboard = new osg::Billboard();
 	billboard->setMode(mode);
 	if (mode == Billboard::AXIAL_ROT)

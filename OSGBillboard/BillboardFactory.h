@@ -9,6 +9,20 @@ namespace BillboardExtension
 	class BillboardFactory : public osg::Object
 	{
 	public:
+		// 获取单件实例
+		static osg::ref_ptr<BillboardFactory> getInstance();
+
+		// 创建广告牌
+		// @param image: 广告牌纹理
+		// 						设置一次后，后续调用此函数时就直接使用上一次的几何图形。
+		// @param position: 广告牌位置
+		// @param mode: 广告牌类型
+		// @param axis: 广告牌围绕哪个轴旋转（仅 Billboard::AXIAL_ROT 有效）
+		// @param geometry: 广告牌的几何图形
+		// 							  默认为边长为2的方片。
+		// 							  设置一次后，后续调用此函数时就直接使用上一次的几何图形。
+		osg::ref_ptr<osg::Billboard> createBillboard(osg::Image *image = NULL, osg::Vec3 position = osg::Vec3(0, 0, 0), osg::Billboard::Mode mode = osg::Billboard::POINT_ROT_EYE, osg::Vec3 axis = osg::Vec3(0.0f, 0.0f, 0.0f), osg::Geometry* geometry = NULL);
+		
 
 #pragma region override
 
@@ -34,16 +48,6 @@ namespace BillboardExtension
 
 #pragma endregion
 
-		// 获取单件实例
-		static osg::ref_ptr<BillboardFactory> getInstance();
-
-		// 创建广告牌
-		// @param image: 广告牌纹理
-		// @param position: 广告牌位置
-		// @param mode: 广告牌类型
-		// @param axis: 广告牌围绕哪个轴旋转（仅 Billboard::AXIAL_ROT 有效）
-		// @param geometry: 广告牌的几何构造（默认为边长为2的方片）
-		osg::ref_ptr<osg::Billboard> createBillboard(osg::Image *image = NULL, osg::Vec3 position = osg::Vec3(0, 0, 0), osg::Billboard::Mode mode = osg::Billboard::POINT_ROT_EYE, osg::Vec3 axis = osg::Vec3(0.0f, 0.0f, 0.0f), osg::Geometry* geometry = NULL);
 	protected:
 		BillboardFactory();
 
